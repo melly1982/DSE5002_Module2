@@ -1,0 +1,353 @@
+---
+title: "DataFrames_and_Lists"
+author: "HDS"
+date: "2024-06-21"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data Frames and Lists
+
+A dataframe in R is pretty much an R version of an SQL data table
+
+Modern computer languages borrow concepts from one another constantly.
+
+Python has a library called Pandas that implements a dataframe in Python that 
+works me in a very similar way.
+
+In a dataframe (or SQL data table) each row is an "observation" or an "event" 
+an "individual item".   
+
+All the variable values on a given row belong to the same observation
+
+The columns of a dataframe are different variables, one per column.   The 
+columns do not have to be the same type of data as the other columns.
+
+Dataframes look much like Excel sheets, but the structure is more rigid.
+
+Typically you will be loading a dataframe from some data source, maybe a 
+database, a website or a table created in Excel.
+
+Right now we will look at an example data set that comes with R the "Motor Trend
+cars" data set mtcars.   This is a built in "lab rat" data set that comes with
+R
+
+We will load the data first
+
+```{R}
+data(mtcars)
+```
+
+We can find out what is in it using STR
+
+```{R}
+str(mtcars)
+```
+Like a matrix, the data frame has rows and columns we can index by number
+
+There are 32 rows here and 11 columns
+
+We can look at the first 6 rows of the data frame, this is a nice way to 
+see what is in a data frame
+
+```{R}
+head(mtcars)
+```
+
+We can see the last 6 lines using the tail() function, or the whole
+dataframe using the View() function
+
+It is a bad idea to depend too heavily on the View() option.
+
+This is a small data set, 32 rows by 11 columns, so it is easy to understand
+what is happening, but when you get into the hundreds or thousands of rows,
+View() is really useful anymore
+
+```{R}
+View(mtcars)
+```
+
+On the other hand, I use str(), head() and colnames() constantly
+
+We can get lists of the row and column names
+
+```{R}
+rownames(mtcars)
+```
+
+```{R}
+colnames(mtcars)
+```
+
+#Summary
+
+Most R variables will show you some interesting information when you
+use the summary() function
+
+```{R}
+summary(mtcars)
+```
+
+
+#indexing a data frame
+
+Indexing works the same way it does for matrices or vectors
+
+Index with integers
+
+```{R}
+mtcars[1,1:5]
+```
+
+
+```{R}
+mtcars[2,]
+```
+
+```{R}
+mtcars[,10]
+```
+
+```{r}
+mtcars["Mazda RX4","hp"]
+
+```
+
+#Working with a column
+
+We can work with a column by giving the name of the dataframe, $ and the column
+name
+
+```{R}
+mtcars$wt
+```
+
+#Adding a column
+
+R does not "protect" data frames, we can just add a new column by 
+giving it a column name and a set of values- this is a bit alarming if you
+are used to managing SQL databases :)
+
+Example:
+
+In cars, the horsepower to Weight ratio is important (it is for humans too)
+
+We can add this variable to our data frame
+
+```{R}
+mtcars["Power_2_Weight"]=mtcars$hp/mtcars$wt
+```
+
+We can now ask, which car has the highest power to weight ratio?
+
+```{R}
+maxPW_index=which.max(mtcars$Power_2_Weight)
+
+mtcars[maxPW_index,]
+```
+
+It might be sort of interesting to see the top three power to weight vehicles,
+not just the largest.
+
+We'd like to sort the data frame by Power_2_weight ratio
+
+We use order to get the indexing to do this
+
+```{R}
+p2w_index=order(mtcars$Power_2_Weight,decreasing = TRUE)
+
+head(mtcars[p2w_index,])
+
+```
+
+Look at those ideas- think of how you might use them on your own problem
+to work with data
+
+#Plotting
+
+We will see more sophisticated plotting, but we can easily do simple
+plots using the plot() or hist() functions
+
+```{R}
+plot(mtcars$Power_2_Weight,mtcars$qsec)
+```
+ What hypothesis does the plot above address?
+ 
+#Histograms are one way to look at distributions of values
+
+```{r}
+hist(mtcars$Power_2_Weight)
+```
+#Question/Action
+
+State a hypothesis about Power_2_Weight and mpg (miles per gallon).   Create
+a graph that tests the hypothesis
+
+#Creating data frames in R
+
+We can create data frames from within R in several ways
+
+Lets declare some matched arrays, maybe describing some people
+
+```{R}
+last_name=c("Smith","Jones","Alvarez")
+first_name=c("Bob","Jane","Angel")
+age=c(30,27,32)
+```
+
+We can put these in a dataframe
+
+```{R}
+customer_df=data.frame(last=last_name, first=first_name,Age=age)
+head(customer_df)
+```
+
+#Utilities
+
+There are tools for reading data out of a csv (comma seperated value) or excel
+file and into a data frame,  or to connect to a database and convert an SQL
+data table into a data frame.
+
+There are also tools to write a data file to disk
+
+It is often convenient to save results as data.frames, since they are easy to
+work with in other software packages if you save them as csv files
+
+#Loading a DataFrame from a File
+
+We need to specify the name of the file, with the file path included.
+
+The easiest way to get the full file path correct is to use the
+file.choose() function to browse for the file.
+
+Here,  we browse for the file and save it to a variable called "infile"
+
+One thing to be careful about is that file.choose() will not knit,
+use it in your work, but copy the file name to a variable and then 
+"rem out" the file.choose() operation by putting # in front of it
+
+
+We will use the Boston Assessment Roll again
+
+```{R}
+
+#rem this out by putting # in front of the command below
+
+file.choose()
+```
+
+```{R}
+# cut and paste using Ctrl-C and Ctrl-V to assign the full path to infile
+
+infile="C:\\Users\\hdavi\\Dropbox\\Merrimack_Data_Science\\DSE5002_R+Python\\DSE5002_Module_1\\Boston_Assessment_Roll_2024.csv"
+```
+
+now use read.csv() to load the assessment roll into a data frame
+
+```{R}
+boston_roll=read.csv(infile)
+```
+
+```{R}
+head(boston_roll)
+```
+
+There are R functions to import excel files and many other types of data
+
+Google "R import excel sheet" to learn how to do this
+
+#Saving a dataframe to disk
+
+This will let us use it somewhere else later
+
+We do have to specify the whole path name,  meaning the directory name
+plus the file name.
+
+If you don't specify a full path,  R saves the file to the current directory
+
+YOu can see the current directory in the Files window to the right in 
+RStudio
+
+you can see the current directory using getwd(), which means get working 
+directory
+
+```{R}
+getwd()
+```
+
+You can change the directory using the "Session" menu in RStudio
+
+I'll change to the desktop using Session-Set Working Directory
+
+```{R}
+getwd()
+```
+
+Let's save our customer_df data frame
+
+specify the file name
+
+```{r}
+#I like to put the date in the name of an output file, it helps in long 
+#projects
+
+outfile="customer_df_6_21_2024.csv"
+```
+
+```{R}
+write.csv(customer_df,outfile)
+```
+
+Open this file in excel and see if it matches what you expect
+
+#Lists
+
+R can store things in lists, which can contain different types of objects
+
+```{R}
+a=list("Bob", 1, as.integer(2),TRUE,c(1,3,5,7,9))
+```
+
+Lists can store different types of things
+
+We can index them
+
+```{R}
+a[1]
+```
+we can assign names in a list as well
+
+```{R}
+a=list(name="Bob", purchases=1, category=as.integer(2),active=TRUE,items_purchased=c(1,3,5,7,9))
+a
+```
+We can access these by name
+
+```{R}
+a$name
+```
+
+Notice that one of the things in a,  items_purchased, is itself a vector.
+
+You cannot store vector values within a single variable such as 
+"items_purchased" in a data frame,  
+
+You can't store this easily in a single SQL dataframe either
+
+You can in a newer NOSQL database like MongoDB, or in a user defined class in R
+
+More on that later....
+
+We can't really do math directly on a list, since they often have mixtures of
+data types in them.
+
+Right now,  dataframes will be more usefull to you
+
+If you get working on complex problems, or start using NOSQL databases, you will
+be using lists more often.
+
+
+

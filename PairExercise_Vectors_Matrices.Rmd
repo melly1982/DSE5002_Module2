@@ -1,0 +1,545 @@
+---
+title: "Vectors_Matrices"
+author: "HDS"
+date: "2024-06-21"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Vectors and Matrices
+
+A vector is a set of N values arranged in a sequence
+
+The vector many people may be familiar with is cartesion coordinates, in
+which a pair of values (x,y) is used to indicate a position.   This is a two 
+dimensional vector,  we use them all the time in creating graphs.  The values 
+x and y are distances, in feet or meters or some other measure of distance.
+
+If we wanted to work with three dimensions, we would need a height z as well,
+giving us a 3 dimensional vector (x,y,z)
+
+A set of coordinates such as (3,4,1) means x=3, y=4,z=1, vectors are a compact
+way of writing down this information.
+
+Latitude and longitude form another 2 dimensional vector, (Lat,Long) but these
+are actually angles, not distances, since they indicate locations on the 
+surface of the earth, which is roughly spherical.
+
+Vectors with more dimensions than 2 or 3 are possible.   They are hard for us
+to visualize, but the mathematics of them is straightforward.
+
+Basic ideas about vectors are covered in an undergraduate Physics 1 or 
+Calculus 3 course.   More advanced vector ideas are covered in an undergraduate
+course called Linear Algebra.
+
+In Data Science,  vectors are often used to represent or depict data for a 
+given observation, event or individual.
+
+Typically, a vector has N entries, which are all variables of the same type
+
+The entries are in a specific order that is kept constant.
+
+Suppose we are tracking average monthly consumer spending in several categories
+
+Housing, Energy, Transportation, Food, Entertainment, Medical, Insurance
+
+so there are 7 categories here,  so we could represent an individual Jane's 
+spending as a vector
+
+We can create a vector in R to represent this
+
+```{R}
+Jane_spending=c(1800,400,550,900,200,525,200)
+Jane_spending
+```
+
+We could calculate Jane's yearly totals in each category, simply multiplying
+the vector by 12
+
+```{R}
+Jane_spending*12
+
+```
+
+There are a number of simple operations we can carry out on vectors
+
+finding the length, which is the number of entries in the vector
+
+```{R}
+length(Jane_spending)
+```
+
+Finding the min, max, median, sum, standard deviation (sd) etc
+
+```{R}
+min(Jane_spending)
+median(Jane_spending)
+sd(Jane_spending)
+```
+We can also calculate a product of all values in the vector
+
+This doesn't make sense for Jane's budget, but in other contexts it
+might be handy
+
+```{R}
+
+prod(Jane_spending)
+
+```
+
+
+#Actions:  Create cells that
+
+a. Calculate what Jane spends per week
+
+b. What is Jane's total yearly spending?    Hint: use the sum() function
+
+c. Set up a monthly spending vector for some other person
+
+#Vectorized calculations
+
+We can carry out operations on vectors that are
+
+a.) carried out on each value in the vector,  these are called
+     element-wise operations.   Our calculation of the yearly spending
+     totals for Jane above were element-wise operations
+     
+b.) there are vector operations, which act on the value of a vector as a whole
+     this includes operations such as calculating the magnitude or size of 
+     a vector,  or things like the dot product or cross product. 
+
+If you talk about "multiplying two vectors" that can have multiple 
+meanings
+
+1.) element-wise multiplication,  of corresponding values in the vector
+
+```{R}
+#elementwise multiplication of vectors
+
+x=c(1,2,3)
+y=c(5,10,15)
+x*y
+```
+
+2.) the dot product or scalar product or inner product (synonyms)
+
+this is the sum of the values obtained in the element-wise multiplication above
+
+the dot product is a number of other things as well I won't take time to talk 
+about today
+
+to compute a dot product, the two vectors must have the same length
+
+```{R}
+# dot product of vectors x and y
+x%*%y
+```
+
+Notice that * gave us an element-wise multiplication, %*% gave use the dot 
+product
+
+3.) the last form of vector multiplication is called a cross product, or vector
+product.   
+
+I am discussing this here for two reasons:
+
+a.) You need to be aware of the different possible types of vector
+     multiplication,  even if you never use most of them.
+     
+b.) For some areas in data science, knowing linear algebra is pretty important.
+    It is an underpinning of a lot of statistics, and is used as part of the
+    coding of many algorithms.   
+    
+    I want to be sure that those of you who have had a course in linear 
+    algebra see how to do linear algebra in R.
+    
+    There are many career paths in data science, you don't have to know
+    linear algebra to work effectively in many roles, but it is a really useful 
+    area of knowledge.
+    
+    Remember data science is a mix of mathematics, statistics, computer 
+    science and business acumen.   People who excel in all of these
+    are called "Unicorns" for good reason.   Most of us are good in one 
+    area and ideally passable in the other two.  We rely on our team members to
+    cover the areas we are weak in, and contribute where we are strong.
+    
+    Not to discourage you from aspiring to be a Unicorn, just to say you don't
+    have to be one.
+
+
+To compute a cross product,  I am doing a matrix multiplication %*% of the
+vector x by the transpose of the vector y,   written as t(y)
+
+we will talk briefly again later about matrix multiplication
+
+```{R}
+x%*%t(y)
+```
+
+Just what is this transpose thing anyway?
+
+```{R}
+y
+z=t(y)
+str(y)
+str(z)
+
+```
+
+Notice that y is a vector, a list of 3 values.  This is sometimes called a
+column vector,  all the data is in a single column.
+
+z is something a bit different.   It has two indices, not 1.
+
+z is a 1 row by 3 column matrix.   
+
+A row vector like y could also be called a 3 x 1 matrix,   meaning it has three
+rows and only one column
+
+Vectors are just a special case of a matrix, we could call them N x 1 matrices
+
+The notation %*% really means "matrix multiplication", * means element-wise 
+operations
+
+There is also a form of matrix division %/% as well as element-wise 
+multiplication /
+
+#Vectorized Calculations
+
+In languages such as R and Python, we want to carry out operations on the
+whole vector at the same time, this is called vectorization.
+
+Vectorized calculations are actually done with C subroutines, making them much
+faster.  When you are working on cloud-based systems or cluster systems, 
+vector operations are much faster than any other approach
+
+Example:
+
+Suppose we want to graph a function,  y= x^2 -3x +4 from the range -10 to 10
+
+We can do this using vector commands in r, instead of using a loop
+
+```{R}
+#set up x,  we could alter the by to get finer steps
+
+x=seq(from=-10,to=10,by=0.5)
+
+#use a vector calculation to get y
+# all the values in y are calculated at once
+
+y= x**2 -3*x+4
+
+plot(x,y)
+```
+
+
+
+
+#Actions
+
+Use code to figure out
+
+a.) How long is x?  How long is y?
+b.) What is the minimum y?  what location in the y array does it occur at?
+c.) Which x value produces the minimum y?
+
+
+#Recycling
+
+R has a feature not seen in other languages
+
+If we carry out a vector operation using two vectors of unequal length, so that
+they don't have the same number of elements, most languages will generate
+an error
+
+R doesn't,  it just recycles the values in the shorter vector
+
+Here's an example
+
+```{R}
+x=1:10
+y=c(0,5,10)
+x+y
+```
+
+R does at least give us a warning, then it completes the operation by cycling
+through the values in y in order
+
+This is a feature of R I really don't like, it is not present in most other 
+languages.
+
+
+#Indexing
+
+We can index, or read values in an array using either 1 or more integer values,
+which are the ordinal locations of the values in the array
+
+```{r}
+#set up array
+
+a=c(1,3,5,7,9,11,13)
+
+#select one entry in a,  the fifth in this case
+
+a[5]
+
+# Note that R starts indices at 1, so a[1] is the first item in a
+#
+# Python and most other languages start indexes at 0, meaning how far from the
+#start of the array or vector,  in python a[1] is the second item in the list
+# this is one difference between R and Python that will trip you up all the 
+# time
+
+# here is a slice of a that selects the second and fourth items
+
+a[c(2,4)]
+
+```
+
+We can also slice or select using an array of logical (TRUE/FALSE) values
+that is the same length as the array
+
+```{R}
+slice_values=c(FALSE, FALSE,TRUE,FALSE,FALSE, TRUE,FALSE)
+a[slice_values]
+```
+ Writing out lists of TRUE and FALSE values seems like an awkward way
+ to do slice.
+ 
+ We don't write out these lists of logical values, we use a comparison test to do it
+ 
+ Comparisons are of the form of a comparison using (>,<,==,!-,>=, <=, etc)
+ 
+ 
+```{R}
+ a[a>6]
+```
+
+#Set Operations
+
+We can think of vectors are representing sets of objects
+
+```{R}
+set_a=c(1,2,4,5,6,7,8,9)
+set_b=c(1,3,5,7,9)
+set_c=c(2,4,6,8)
+```
+
+Then we can look at some set operations
+
+Union, the set of all values in either set
+
+```{R}
+union(set_b,set_c)
+```
+
+We can look at the intersection of two sets, the set of things in both
+
+```{R}
+intersect(set_b,set_c)
+```
+```{R}
+intersect(set_a,set_b)
+```
+
+We can ask if an object is in a set
+
+```{R}
+1 %in% set_b
+1 %in% set_c
+```
+
+This is handy for checking to see if a value is one of a set of allowed
+values or not
+
+```{R}
+species_list=c('cat', 'dog','mouse')
+'Cat' %in% species_list
+'cat' %in% species_list
+```
+
+There is a way to compute differences in sets
+
+```{R}
+setdiff(set_a,set_b)
+setdiff(set_b,set_a)
+
+```
+Why did changing the order matter?
+
+Look up setdiff in the help function
+
+
+#Matrices
+
+Matrices are rectangular grids of data.   The data always has to be the same
+type, either numeric, integer or complex. 
+
+Most matrices have rows and columns, so they are two dimensional structures.
+
+By convenient, we say there are m rows and n columns.
+
+We also refer to the row first, then the column
+
+We will often be loading matrices from a text file, or an Excel file or some
+other source, but we can create them in R
+
+We send in an array, and then tell R how to convert it to a matrix
+
+```{R}
+a=matrix(1:12,nrow=4, byrow=FALSE)
+a
+```
+
+Notice that the array filled in the matrix by columns first
+
+We can change this in fill by the row
+
+```{R}
+b=matrix(1:12,nrow=4, byrow=TRUE)
+b
+```
+
+Both a and b are 4x3 matrices,  meaning they have 4 rows and 3 columns
+
+We always state the row first, then the column
+
+We can use the dim() function to get the size of matric
+
+```{R}
+dim(b)
+#number of rows
+dim(b)[1]
+#number of columns
+dim(b)[2]
+```
+
+#Indexing a Matrix
+
+We have to supply both a row number and a column number
+
+Before you run the cell below, predict what the value will be
+
+```{R}
+b[2,2]
+```
+
+We can also index all contents of a single row, or a single column
+
+```{R}
+b[3,]
+b[,2]
+```
+
+If we use negative index values it removes that particular row or column
+and returns everything else, handy for editing
+
+```{R}
+b[,-2]
+```
+
+Notice that the indexing of a vector and of a matrix work the same way,
+a matrix just has 2 indices.
+
+#Special matrics
+
+There are some special matrices that we use from time to time
+
+This is an identity matrix
+
+
+```{R}
+diag(4)
+```
+
+Here are matrices of all 1s or all 0s
+
+```{R}
+matrix(0, nrow=5,ncol=5)
+matrix(1,nrow=3,ncol=3)
+```
+We can also ask for a random matrix
+
+```{R}
+d=matrix(runif(25),nrow=5,ncol=5)
+d
+```
+
+#Adding row and column names
+
+we can add row and column names, vectors with the same number of entries of
+rows and columns respectively
+
+Note, we do need the assignment operator here, not the equals sign
+
+```{R}
+
+# bonus if you can tell me what pop culture reference 1,2,3 Marlena's is from
+
+rownames(d)=c("one","two","three","marlenas","four")
+
+colnames(d) =c("a","b","c","d","e")
+
+d
+```
+
+#indexing by name
+
+When we have names assigned to rows and columns, we can index
+using the names or numbers
+
+In many situations, we will want the row names to be identifiers or names
+
+and the column names to be variable names
+
+```{R}
+d['marlenas','a']
+```
+
+
+#For linear algebra fans
+
+This is just a quick look at how R can carry out some common linear
+algebra calculations for you- 
+
+
+Here is the determinant
+
+```{R}
+det(d)
+```
+
+#Here is the inverse
+
+We need the Mass library to calculate this
+
+This is a generalized inverse calculation
+
+```{R}
+require('MASS')
+d_inv=ginv(d)
+d_inv
+```
+
+Checking on it
+
+d times it's inverse should be an identity matrix
+
+```{R}
+d%*%d_inv
+```
+
+Notice the very small rounding error that is present
+
+Here is an eigenvalue calculation
+
+```{R}
+my_eigen=eigen(d)
+```
+
+```{R}
+str(my_eigen)
+```
