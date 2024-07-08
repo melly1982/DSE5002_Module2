@@ -1,0 +1,145 @@
+---
+title: "Week 2 Exercises"
+author: "Melissa Nooney"
+date: "July 6, 2024"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  word_document: default
+---
+
+Please complete all exercises below. You may use stringr, lubridate, or the forcats library. 
+
+Place this at the top of your script:
+```{r}
+library(stringr)
+library(lubridate)
+library(forcats)
+library(tinytex)
+```
+
+
+
+# Exercise 1
+Read the sales_pipe.txt file into an R data frame as sales. 
+
+```{r}
+# Your code here
+sales <- read.delim("sales_pipe.txt"
+                     ,stringsAsFactors=FALSE
+                     ,sep = "|"
+ )
+```
+
+# Exercise 2
+You can extract a vector of columns names from a data frame using the colnames() function. Notice the first column has some odd characters. Change the column name for the FIRST column in the sales date frame to Row.ID. 
+
+**Note: You will need to assign the first element of colnames to a single character.**
+
+```{r}
+colnames(sales)[1] <- 'row.id'
+
+```
+
+# Exercise 3
+Convert both Ship.Date and Order.Date to date vectors within the sales data frame. What is the number of days between the most recent order and the oldest order?
+How many years is that?
+How many weeks?
+
+**Note: Use lubridate**
+
+```{r}
+sales$Order.Date <- as.Date(sales$Order.Date
+                                ,format='%m/%d/%Y'
+                               )
+
+sales$Ship.Date <- mdy(sales$Ship.Date)
+
+class(sales$Ship.Date)
+
+day_min <- min(sales$Order.Date)
+day_max <- max(sales$Order.Date)
+days_between <- day_max-day_min
+days_between
+weeks_btwn <- difftime(day_max, day_min, units = "weeks")
+weeks_btwn
+years<- interval(day_min, day_max) / years(1)
+years
+```
+
+
+# Exercise 4
+What is the average number of days it takes to ship an order?
+
+#reviewing my answers, not sure why I created a new column, I could have also 
+just applied mean(shipping), but I'm going to leave it. I do realize I could 
+have made this much easier on myself. 
+```{r}
+shipping <- sales$Ship.Date - sales$Order.Date
+shipping
+sales$ship.days <- shipping
+mean(sales$ship.days)
+
+```
+
+
+# Exercise 5
+How many customers have the first name Bill?
+You will need to split the customer name into first and last name segments and then use a regular expression to match the first name bill. Use the length() function to determine the number of customers with the first name Bill in the sales data. 
+
+```{r}
+temp_name <- str_split_fixed(sales$Customer.Name, pattern=' ',n=2)
+Bill <- which(temp_name == "Bill")
+length(Bill)
+```
+
+# Exercise 6
+How many mentions of the word 'table' are there in the Product.Name column? 
+**Note you can do this in one line of code**
+
+```{r}
+sum(str_detect(sales$Product.Name, "table"))
+```
+
+# Exercise 7
+Create a table of counts for each state in the sales data. The counts table should be ordered alphabetically from A to Z. 
+
+#I struggled so badly with this problem. In an attempt to get my mind off it,
+I actually found what I believe to be the correct code, by doing the discussion
+assignment! And it was painfully simple.
+```{r}
+table(sales$State)
+
+
+```
+
+# Exercise 8
+Create an alphabetically ordered barplot for each sales Category in the State of Texas. 
+
+```{r}
+texas <- subset(sales, subset = State == "Texas")
+barplot(table(texas$Category))
+
+```
+
+# Exercise 9
+Find the average profit by region.
+**Note: You will need to use the aggregate() function to do this. To understand how the function works type ?aggregate in the console.**
+
+```{r}
+aggregate(sales$Profit, list(sales$Region), mean)
+
+```
+
+# Exercise 10
+Find the average profit by order year. 
+**Note: You will need to use the aggregate() function to do this. To understand how the function works type ?aggregate in the console.**
+
+```{r}
+temp_year <- str_split_fixed(sales$Order.Date, pattern='-',n=3)
+sales$year <- temp_year[,-2:-3]
+aggregate(sales$Profit, list(sales$year), mean)
+
+```
+
